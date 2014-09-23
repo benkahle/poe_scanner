@@ -37,6 +37,16 @@ float distance(int value, int order) {
   return dist;
 }
 
+int varience(int values[], int average) {
+  int sumSquared = 0;
+  int length = sizeof(values)/sizeof(int);
+  for (int i = 0; i < length, i++) {
+    sumSquared += pow(values[i],2);
+  }
+  int normSumSquared = sumSquared / length;
+  return normSumSquared - pow(average,2);
+}
+
 void loop() {
   // read the value from the sensor:
   sensorValue = analogRead(sensorPin);
@@ -45,7 +55,11 @@ void loop() {
   values[i] = sensorValue;
   if (i == 0) {
     averageValue = average(values);
-    Serial.println(distance(averageValue, approxOrder));
+    Serial.print(average(values));
+    Serial.print(",");
+    Serial.print(distance(averageValue, approxOrder));
+    Serial.print(",");
+    Serial.println(varience(values, average(values)));
   }
 }
 
