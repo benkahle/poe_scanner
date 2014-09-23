@@ -22,13 +22,13 @@ float distance(int value, int order) {
   float dist;
   switch (order) {
     case 3:
-      dist = 0.0026*pow(value,3)-0.1943*pow(value,2)-5.8401*value+686.78;
+      dist = -0.000001211*pow(value,3)+0.0015*pow(value,2)-0.7193*value+154.49;
       break;
     case 2:
-      dist = 0.1041*pow(value,2)-16.264*value+795.8;
+      dist = 0.0002*pow(value,2)-0.2315*value+99.687;
       break;
     case 1:
-      dist = -8.3593*value+665.82;
+      dist = -0.113*value+79.55;
       break;
     default:
       return 0;
