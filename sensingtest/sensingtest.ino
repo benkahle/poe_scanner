@@ -17,13 +17,24 @@ int average(int values[]) {
   return sum/length;
 }
 
+int varience(int values[], int average) {
+  int sumSquared = 0;
+  int length = sizeof(values)/sizeof(int);
+  for (int i = 0; i < length, i++) {
+    sumSquared += pow(values[i],2);
+  }
+  int normSumSquared = sumSquared / length;
+  return normSumSquared - pow(average,2);
+}
+
 void loop() {
   // read the value from the sensor:
   sensorValue = analogRead(sensorPin);
   int i = count % samples;
   values[i] = sensorValue;
   if (i == 0) {
-    Serial.println(average(values)); 
+    Serial.println(average(values));
+    Serial.println(variable(values, average(values)));
   }
 }
 
