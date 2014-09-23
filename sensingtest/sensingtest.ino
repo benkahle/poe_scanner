@@ -1,6 +1,6 @@
 int sensorPin = A0;    // select the input pin for the potentiometer
 int sensorValue = 0;  // variable to store the value coming from the sensor
-int count;
+int count = 0;
 const int samples = 25; // Number of samples to average
 const int approxOrder = 3; // Order of distance approximation function (1,2,3)
 int values[samples];
@@ -37,13 +37,13 @@ float distance(int value, int order) {
   return dist;
 }
 
-int varience(int values[], int average) {
-  int sumSquared = 0;
+unsigned long varience(int values[], int average) {
+  unsigned long sumSquared = 0;
   int length = sizeof(values)/sizeof(int);
-  for (int i = 0; i < length, i++) {
+  for (int i = 0; i < length; i++) {
     sumSquared += pow(values[i],2);
   }
-  int normSumSquared = sumSquared / length;
+  unsigned long normSumSquared = sumSquared / length;
   return normSumSquared - pow(average,2);
 }
 
@@ -53,7 +53,8 @@ void loop() {
   int i = count % samples;
   int averageValue;
   values[i] = sensorValue;
-  if (i == 0) {
+  delay(10);
+  if (i == samples-1) {
     averageValue = average(values);
     Serial.print(average(values));
     Serial.print(",");
@@ -61,6 +62,10 @@ void loop() {
     Serial.print(",");
     Serial.println(varience(values, average(values)));
   }
+  if (count >= 500*samples) {
+    count = 0;
+  }
+  count++;
 }
 
 // // Sweep
