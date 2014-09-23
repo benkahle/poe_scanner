@@ -1,7 +1,8 @@
 int sensorPin = A0;    // select the input pin for the potentiometer
 int sensorValue = 0;  // variable to store the value coming from the sensor
 int count;
-const int samples = 25;
+const int samples = 25; // Number of samples to average
+const int approxOrder = 3; // Order of distance approximation function (1,2,3)
 int values[samples];
 
 void setup() {
@@ -17,13 +18,34 @@ int average(int values[]) {
   return sum/length;
 }
 
+float distance(int value, int order) {
+  float dist;
+  switch (order) {
+    case 3:
+      dist = 0.0026*pow(value,3)-0.1943*pow(value,2)-5.8401*value+686.78;
+      break;
+    case 2:
+      dist = 0.1041*pow(value,2)-16.264*value+795.8;
+      break;
+    case 1:
+      dist = -8.3593*value+665.82;
+      break;
+    default:
+      return 0;
+      break;
+  }
+  return dist;
+}
+
 void loop() {
   // read the value from the sensor:
   sensorValue = analogRead(sensorPin);
   int i = count % samples;
+  int averageValue;
   values[i] = sensorValue;
   if (i == 0) {
-    Serial.println(average(values)); 
+    averageValue = average(values);
+    Serial.println(distance(averageValue, approxOrder));
   }
 }
 
