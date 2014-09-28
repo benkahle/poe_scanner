@@ -12,8 +12,6 @@ Servo servo1;
 Servo servo2; 
 int servo1Pos = 0;
 int servo2Pos = 0;
-const int servoStart = 40;
-const int servoEnd = 140;
 
 void setup() {
   Serial.begin(9600);
@@ -61,11 +59,11 @@ unsigned long varience(int values[], int average) {
 
 
 /*
-* Do a full scan of one direction
+* Do a full scan of one direction 
 * type: 0 = horizontal
 * type: 1 = vertical 
 */
-void scan(int type) {
+void scan(int type, int start, int end) {
   Servo servo;
   int *servoPos;
   if (!type) {
@@ -76,7 +74,19 @@ void scan(int type) {
     servoPos = &servo2Pos;
   }
   int averageValue;
-  for (*servoPos = servoStart; *servoPos < servoEnd; (*servoPos)++) {
+  int high;
+  int low;
+  int add = 0;
+  if (start <= end) {
+    low = start;
+    high = end;
+    add = 1;
+  } else {
+    high = start;
+    low = end;
+    add = 0;
+  }
+  for (*servoPos = low; *servoPos < high;) {
     servo.write(*servoPos);
     for (int i = 0; i < samples; i++) {
       values[i] = analogRead(sensorPin);
@@ -88,14 +98,33 @@ void scan(int type) {
     Serial.print(servo2Pos);
     Serial.print(",");
     Serial.println(distance(averageValue, approxOrder));
+    if (add) {
+      (*servoPos)++;
+    } else {
+      (*servoPos)--;
+    }
   }
   //Give time to reset to start
-  servo.write(servoStart);
+  servo.write(start);
   delay(300);
 }
-
+ 
 
 void loop() {
-  scan(0);
-  scan(1);
+  servo2.write(90);
+  servo1.write(0);
+  delay(5000);
+  servo1.write(90);
+  delay(5000);
+  servo1.write(180);
+  // servo1Pos = 140;
+  // servo2Pos = 120;
+  // servo1.write(servo1Pos);
+  // servo2.write(servo2Pos);
+  // delay(400);
+  // for (int i = servo1Pos; i > 0; i -=5) {
+  //   scan(0, 140, 140);
+    
+  // }
+  // scan(1, 60, 120);
 }
