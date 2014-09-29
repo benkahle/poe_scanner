@@ -78,15 +78,15 @@ void scan(int type, int start, int end) {
   int low;
   int add = 0;
   if (start <= end) {
-    low = start;
-    high = end;
     add = 1;
   } else {
-    high = start;
-    low = end;
     add = 0;
   }
-  for (*servoPos = low; *servoPos < high;) {
+  *servoPos = start;
+  while(1) {
+    if (*servoPos == end) {
+      break;
+    }
     servo.write(*servoPos);
     for (int i = 0; i < samples; i++) {
       values[i] = analogRead(sensorPin);
@@ -99,9 +99,9 @@ void scan(int type, int start, int end) {
     Serial.print(",");
     Serial.println(distance(averageValue, approxOrder));
     if (add) {
-      (*servoPos)++;
+      (*servoPos)+=2;
     } else {
-      (*servoPos)--;
+      (*servoPos)-=2;
     }
   }
   //Give time to reset to start
@@ -111,12 +111,24 @@ void scan(int type, int start, int end) {
  
 
 void loop() {
-  servo2.write(90);
-  servo1.write(0);
-  delay(5000);
-  servo1.write(90);
-  delay(5000);
-  servo1.write(180);
+  int vertStart = 120;
+  int vertEnd = 90;
+  int hozStart = 180;
+  int hozEnd = 110;
+  servo2.write(vertStart);
+  servo1.write(hozStart);
+  delay(1000);
+  for (int k = 0; k < 20; k++) {
+    Serial.println("");
+  }
+  for (int i = vertStart; i != vertEnd; i -= 2) {
+    servo2Pos = i;
+    servo2.write(servo2Pos);
+    delay(5);
+    scan(0, hozStart, hozEnd);
+  }
+  delay(10000);
+  // scan(1, 120, 80);
   // servo1Pos = 140;
   // servo2Pos = 120;
   // servo1.write(servo1Pos);
