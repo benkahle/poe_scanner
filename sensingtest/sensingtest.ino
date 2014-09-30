@@ -37,7 +37,7 @@ float average(int values[]) {
 * value: the value of the IR sensor
 * order: the order of the approximation function to use (1,2,3)
 */
-float distance(int value, int order) {
+float distance(float value, int order) {
   float dist;
   switch (order) {
     case 3:
