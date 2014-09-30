@@ -99,9 +99,9 @@ void scan(int type, int start, int end) {
     Serial.print(",");
     Serial.println(distance(averageValue, approxOrder));
     if (add) {
-      (*servoPos)+=2;
+      (*servoPos)+=1;
     } else {
-      (*servoPos)-=2;
+      (*servoPos)-=1;
     }
   }
   //Give time to reset to start
@@ -121,7 +121,7 @@ void loop() {
   for (int k = 0; k < 20; k++) {
     Serial.println("");
   }
-  for (int i = vertStart; i != vertEnd; i -= 2) {
+  for (int i = vertStart; i != vertEnd; i -= 1) {
     servo2Pos = i;
     servo2.write(servo2Pos);
     delay(5);
