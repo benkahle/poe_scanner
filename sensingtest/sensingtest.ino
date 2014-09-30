@@ -2,7 +2,6 @@
 
 int sensorPin = A0;    // select the input pin for the potentiometer
 int sensorValue = 0;  // variable to store the value coming from the sensor
-int count = 0;
 const int servoPin1 = 5;
 const int servoPin2 = 6;
 const int samples = 25; // Number of samples to average
@@ -19,15 +18,25 @@ void setup() {
   servo2.attach(servoPin2);
 }
 
-int average(int values[]) {
+/*
+* Calculate the average value of a list of integers
+*/
+float average(int values[]) {
   int sum = 0;
   int length = sizeof(values)/sizeof(int);
+  float averageValue = 0;
   for (int i = 0; i < length; i++) {
     sum += values[i];
   }
-  return sum/length;
+  averageValue = sum/length;
+  return averageValue;
 }
 
+/*
+* Tranform the IR sensor measurement into centimeters
+* value: the value of the IR sensor
+* order: the order of the approximation function to use (1,2,3)
+*/
 float distance(int value, int order) {
   float dist;
   switch (order) {
@@ -46,22 +55,11 @@ float distance(int value, int order) {
   }
   return dist;
 }
-
-unsigned long varience(int values[], int average) {
-  unsigned long sumSquared = 0;
-  int length = sizeof(values)/sizeof(int);
-  for (int i = 0; i < length; i++) {
-    sumSquared += pow(values[i],2);
-  }
-  unsigned long normSumSquared = sumSquared / length;
-  return normSumSquared - pow(average,2);
-}
-
-
 /*
-* Do a full scan of one direction 
-* type: 0 = horizontal
-* type: 1 = vertical 
+* Do a full scan of one direction, printing servo angles and distance in cm at each degree 
+* type: 0 = horizontal; 1 = vertical
+* start: start degree for server
+* end: end degree for server
 */
 void scan(int type, int start, int end) {
   Servo servo;
@@ -90,7 +88,7 @@ void scan(int type, int start, int end) {
     servo.write(*servoPos);
     for (int i = 0; i < samples; i++) {
       values[i] = analogRead(sensorPin);
-      delay(1);
+      delay(2);
     }
     averageValue = average(values);
     Serial.print(servo1Pos);
@@ -109,18 +107,21 @@ void scan(int type, int start, int end) {
   delay(300);
 }
  
-
 void loop() {
   int vertStart = 120;
-  int vertEnd = 90;
+  int vertEnd = 85;
   int hozStart = 180;
-  int hozEnd = 110;
+  int hozEnd = 130;
+  //Start in bottom right corner
   servo2.write(vertStart);
   servo1.write(hozStart);
+  //Wait for servos to reach start position
   delay(1000);
+  //Print new lines between runs for easy splitting
   for (int k = 0; k < 20; k++) {
     Serial.println("");
   }
+  //For each vertical degree, do a horizontal scan.
   for (int i = vertStart; i != vertEnd; i -= 1) {
     servo2Pos = i;
     servo2.write(servo2Pos);
@@ -128,15 +129,4 @@ void loop() {
     scan(0, hozStart, hozEnd);
   }
   delay(10000);
-  // scan(1, 120, 80);
-  // servo1Pos = 140;
-  // servo2Pos = 120;
-  // servo1.write(servo1Pos);
-  // servo2.write(servo2Pos);
-  // delay(400);
-  // for (int i = servo1Pos; i > 0; i -=5) {
-  //   scan(0, 140, 140);
-    
-  // }
-  // scan(1, 60, 120);
 }
